@@ -18,10 +18,10 @@ var Game = {
 		var h = c.attr('height');
 		
 		var ctx = this.getContext();
-		ctx.fillStyle="#FF0000";
-		ctx.clearRect(0,0,w,h);
-		ctx.rect(0,0,w,h);
-		ctx.stroke();
+    	ctx.strokeStyle = '#000000';
+    	ctx.fillStyle = '#000000';
+    	
+    	ctx.clearRect(0,0,w,h);
 	},
 	
 	gameRect : function() {
@@ -71,14 +71,14 @@ var Game = {
 		this.ball = ball();
 
 		
-		this.leftPaddle.position.x = 25;
+		this.leftPaddle.position.x = 10;
 		this.leftPaddle.position.y = 250;
 		this.leftPaddle.maxVelocity.x = 0;
 		this.leftPaddle.maxVelocity.y = this.SPEED * this.PADDLE_VELOCITY;
 		this.leftPaddle.velocity.x = 0;
 		this.leftPaddle.velocity.y = this.leftPaddle.maxVelocity.y;
 		
-		this.rightPaddle.position.x = 450;
+		this.rightPaddle.position.x = 475;
 		this.rightPaddle.position.y = 250;
 		this.rightPaddle.maxVelocity.x = 0;
 		this.rightPaddle.maxVelocity.y = this.SPEED * this.PADDLE_VELOCITY;
@@ -274,11 +274,28 @@ var Game = {
 		}
 	},
 
+	_drawBackground: function() {
+		var ctx = this.getContext();
+		
+		var c = $('#gameCanvas');
+		var w = c.attr('width');
+		var h = c.attr('height');
+		
+	    ctx.beginPath();
+		ctx.rect(0,0,w,h);
+		ctx.closePath();
+		ctx.stroke();
+
+	},
 	
 	draw : function() {
 		// draw
 		// clear the back buffer
 		this.clear();
+		
+		this._drawBackground();
+		
+		//ctx.stroke();
 		
 		this.leftPaddle.draw();
 		this.rightPaddle.draw();
@@ -386,11 +403,13 @@ var paddle = function() {
     that.draw = function() {
     	
     	var prevStroke = this.context.strokeStyle;
-    	this.context.strokeStyle = '#FF0000';
+    	this.context.strokeStyle = '#000000';
+    	this.context.fillStyle = '#000000';
     	
+    	this.context.beginPath();
     	// draw rectangle centered at position with fixed size
     	this.context.fillRect(this.position.x,this.position.y,this.size.x,this.size.y);
-    	
+    	this.context.closePath();
     	this.context.strokeStyle = prevStroke;
 
     	
@@ -408,13 +427,15 @@ var ball = function() {
     
     that.draw = function() {
     	// draw circle
-    	var prevStroke = this.context.strokeStyle;
+    	//var prevStroke = this.context.strokeStyle;
     	this.context.strokeStyle = '#FF0000';
+    	this.context.fillStyle = '#FF0000';
     	this.context.beginPath();
     	this.context.arc(this.position.x,this.position.y,this.size.x,0,2*Math.PI);
+    	this.context.closePath();
     	this.context.fill();
     	
-    	this.context.strokeStyle = prevStroke;
+    	//this.context.strokeStyle = prevStroke;
     };
     
     return that;

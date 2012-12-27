@@ -80,8 +80,8 @@ $(document).ready(
 				 lastTimeLoop = currentTimeLoop;
 				 
 			     Game.update(dt);
-			     requestAnimationFrame(gameloop);
 			     Game.draw();
+			     requestAnimationFrame(gameloop);
 			  })();
 			//alert(game.state);
 		}
