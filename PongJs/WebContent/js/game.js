@@ -102,10 +102,20 @@ var Game = {
 		this.state.leftPlayer.name = "Player 1";
 		this.state.rightPlayer.name = "Player 2";
 		
+		this._updateScore();
+		
 	},
 	
 	_updateScore : function() {
-		// TODO: update the html elements of the score when score changes
+		var leftPlayerName = $('#leftPlayer_name');
+		var leftPlayerScore = $('#leftPlayer_score');
+		var rightPlayerName = $('#rightPlayer_name');
+		var rightPlayerScore = $('#rightPlayer_score');
+		
+		leftPlayerName.text(this.state.leftPlayer.name);
+		leftPlayerScore.text(this.state.leftPlayer.score);
+		rightPlayerName.text(this.state.rightPlayer.name);
+		rightPlayerScore.text(this.state.rightPlayer.score);		
 		
 	},
 	
