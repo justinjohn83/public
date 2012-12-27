@@ -69,6 +69,8 @@ var Game = {
 		this.leftPaddle = paddle();
 		this.rightPaddle = paddle();
 		this.ball = ball();
+		
+		this.initGame();
 
 		
 		this.leftPaddle.position.x = 10;
@@ -93,6 +95,18 @@ var Game = {
 		this.ball.velocity.x = -this.BALL_VELOCITY_X * this.SPEED;
 		this.ball.velocity.y = 0;
 			
+	},
+	
+	initGame: function() {
+		this.state = gameState();
+		this.state.leftPlayer.name = "Player 1";
+		this.state.rightPlayer.name = "Player 2";
+		
+	},
+	
+	_updateScore : function() {
+		// TODO: update the html elements of the score when score changes
+		
 	},
 	
 	update : function(dt) {
@@ -375,14 +389,6 @@ var shape = function () {
     
     that.boundingBox = function() {
     	
-//        var bbox = { left: 0, top: 0, right: 0, bottom: 0 };
-//
-//        bbox.left = this.position.x-this.size.x / 2;
-//        bbox.top = this.position.y-this.size.y / 2;
-//        bbox.right = this.position.x+this.size.x / 2;
-//        bbox.bottom = this.position.y+this.size.y / 2;
-//        return bbox;
-    	
     	return rect2D(this.position.x,this.position.y,this.size.x,this.size.y);
     };
     
@@ -402,7 +408,6 @@ var paddle = function() {
     
     that.draw = function() {
     	
-    	var prevStroke = this.context.strokeStyle;
     	this.context.strokeStyle = '#000000';
     	this.context.fillStyle = '#000000';
     	
@@ -410,7 +415,6 @@ var paddle = function() {
     	// draw rectangle centered at position with fixed size
     	this.context.fillRect(this.position.x,this.position.y,this.size.x,this.size.y);
     	this.context.closePath();
-    	this.context.strokeStyle = prevStroke;
 
     	
     };
@@ -486,4 +490,25 @@ var rect2D = function(x,y,width,height) {
     return that;
 	
 };
+
+var player = function() {
+	var that = {};
+	that.name = "Player";
+	that.score = 0;
+	that.id = -1;
+	
+	return that;
+};
+
+var gameState = function() {
+	var that = {};
+	that.id = -1;
+	that.leftPlayer = player();
+	that.rightPlayer = player();
+	that.state = 0;
+	
+	return that;
+};
+
+
 
