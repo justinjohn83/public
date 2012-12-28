@@ -1,0 +1,14 @@
+Javascript Multiplayer pong:
+
+Server:
+Landing page: / - Displays players online and their status (Lobby,Waiting for match,playing)
+
+Jax RS:
+Get: /service/players : Returns list of available players (with their ids)
+Post: /service/login [id=x] - login 
+Post: /service/play (id=[playerId]) -> if successful returns the id of the game
+
+Post: /service/game/id (state={game state object}) -> notifies server of game state and changes
+
+
+
