@@ -46,6 +46,7 @@ var Game = {
 	ball : 0,
 	
 	// constants
+	MAX_SCORE : 11,
 	SPEED : 5,
 	PADDLE_VELOCITY : 40,
 	BALL_VELOCITY_Y : 25,
@@ -142,6 +143,11 @@ var Game = {
 			// TODO: check end of game
 			this._resetPositions();
 			this.state.attributes.gameEvent = null;
+			
+			if(this.state.leftPlayer.score >= this.MAX_SCORE || 
+			   this.state.rightPlayer.score >= this.MAX_SCORE) {
+				return false;
+			}
 		}
 		
 		if(!keydown.up || !keydown.down) {
@@ -155,6 +161,8 @@ var Game = {
 
 		this.chkBallPaddleCollsions();
 		this.chkBallWallCollisions();
+		
+		return true;
 		
 	},
 	// TODO: these two movePaddleUp and movePaddleDown should be private

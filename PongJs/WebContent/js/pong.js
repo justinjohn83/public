@@ -79,9 +79,16 @@ $(document).ready(
 				 var dt = (currentTimeLoop - lastTimeLoop) / 1000;
 				 lastTimeLoop = currentTimeLoop;
 				 
-			     Game.update(dt);
-			     Game.draw();
-			     requestAnimationFrame(gameloop);
+			     var continueGame = Game.update(dt);
+			     if(!continueGame) {
+			    	 cancelAnimationFrame();
+			    	 alert("Game Over: " + Game.state.leftPlayer.name + " " + Game.state.leftPlayer.score + " - " + Game.state.rightPlayer.name + " " + Game.state.rightPlayer.score);
+			    	 
+			     }
+			     else {
+				     Game.draw();
+				     requestAnimationFrame(gameloop);
+			     }
 			  })();
 			//alert(game.state);
 		}
