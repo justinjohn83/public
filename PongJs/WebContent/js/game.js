@@ -160,12 +160,14 @@ var Game = {
 	
 	
 	// TODO: need to tweak this!
-	calcVelocityMult: function(ballBounds,paddleBounds) {
+	calcVelocityMult: function(paddleBounds,ballBounds) {
 		var maxDiff = paddleBounds.height / 2;
-		var xRelLoc = Math.abs(ballBounds.y - paddleBounds.y);
+		var ballY = ballBounds.y; // - ballBounds.height / 2;
+		var paddleY = paddleBounds.y + paddleBounds.height / 2;
+		var yRelLoc = ballY - paddleY;
 		// formula linear (0,0),(maxDiff,1.5)
 		// y = 1.5 x / maxDiff
-		return 1.5 * xRelLoc / maxDiff;
+		return 1.5 * yRelLoc / maxDiff;
 		
 
 	},
