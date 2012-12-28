@@ -39,7 +39,7 @@ var Game = {
 	this.rightPaddle = null;
 	this.ball = null;
 	*/
-	state : 0,
+	//state : 0,
 	leftPaddle : 0,
 	rightPaddle : 0,
 	ball : 0,
@@ -255,7 +255,7 @@ var Game = {
 		{
 			// clamp to playable area
 			var pos = this.ball.position;
-			//tp_location loc = tp_clampPointToRect(&gameArea,&pos);
+			var loc =  gameArea.clampPoint(pos);
 			//pongBall.position = pos;
 			
 			// if ball intersects left side then computer player scored
@@ -457,6 +457,14 @@ var ball = function() {
     return that;
 };
 
+var PointLocation = {
+		Inside : 0,
+		Left : 1,
+		Bottom : 2,
+		Right : 3,
+		Top : 4
+	};
+
 var rect2D = function(x,y,width,height) {
 	var that = {};
 	
@@ -478,6 +486,80 @@ var rect2D = function(x,y,width,height) {
 		       this.y + this.height > r.y;
 			
            };
+   that.clampPoint = function(pt) {
+		var minX = this.getMinX();
+		var minY = this.getMinY();
+		
+		var diffX = pt.x - minX;
+		var diffY = pt.y - minY;
+		
+		var loc = PointLocation.Inside;
+		
+		// test minimums
+		if(diffX < 0 || diffY < 0)
+		{
+			if(diffX < 0 && diffY < 0)
+			{
+				pt.x = minX;
+				pt.y = minY;
+				if(diffX <= diffY)
+					loc = PointLocation.Left;
+				else
+					loc = PointLocation.Bottom;
+			}
+			else if(diffX < 0)
+			{
+				pt.x = minX;
+				loc = PointLocation.Left;
+			}
+			else // diffY < 0
+			{
+				pt.y = minY;
+				loc = PointLocation.Bottom;
+			}
+			
+			return loc;
+
+		}
+		
+		// test maximums
+		
+		var maxX = this.getMaxX();
+		var maxY = this.getMaxY();
+		
+		diffX = maxX - pt.x;
+		diffY = maxY - pt.y;
+		
+		if(diffX < 0 || diffY < 0)
+		{
+			if(diffX < 0 && diffY < 0)
+			{
+				pt.x = maxX;
+				pt.y = maxY;
+				if(diffX <= diffY)
+					loc = PointLocation.Right;
+				else
+					loc = PointLocation.Top;
+			}
+			else if(diffX < 0)
+			{
+				pt.x = maxX;
+				loc = PointLocation.Right;
+			}
+			else // diffY < 0
+			{
+				pt.y = maxY;
+				loc = PointLocation.Top;
+			}
+			
+			return loc;
+			
+		}
+		
+		return loc;
+
+   };
+   
    that.getMinX = function() {
     	return this.x;
     };
@@ -517,7 +599,37 @@ var gameState = function() {
 	that.id = -1;
 	that.leftPlayer = player();
 	that.rightPlayer = player();
-	that.state = 0;
+	that.state = PlayState.NewGame;
+	that.attributes = gameAttributes();
+	
+	return that;
+};
+
+
+
+var PlayState = {
+	NewGame : 0,
+	InProgress : 1,
+	Complete : 2
+};
+var CollisionType = {
+	None : 0,
+	LeftPlayer : 1,
+	RightPlayer : 2
+	
+};
+
+var GameEvent = {
+	LeftPlayerScored : 0,
+	RightPlayerScored : 1,
+	Paused : 2
+};
+
+var gameAttributes = function() {
+	var that = {};
+	
+	that.collisionType = CollisionType.None;
+	that.gameEvent = null;
 	
 	return that;
 };
