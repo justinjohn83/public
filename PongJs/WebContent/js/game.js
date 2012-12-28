@@ -39,7 +39,8 @@ var Game = {
 	this.rightPaddle = null;
 	this.ball = null;
 	*/
-	//state : 0,
+	
+	state : 0,
 	leftPaddle : 0,
 	rightPaddle : 0,
 	ball : 0,
@@ -191,7 +192,7 @@ var Game = {
 			this.ball.velocity.y = this.BALL_VELOCITY_Y * this.SPEED * this.calcVelocityMult(yourPaddleBounds,pongBallBounds);
 			this.ball.velocity.x = -this.ball.velocity.x;
 			
-			//collisionType = Player;
+			this.state.attributes.collisionType = CollisionType.LeftPlayer;
 			
 		}
 		else if(this.ball.velocity.x > 0 && (compPaddleBounds.intersects(pongBallBounds) ||
@@ -207,7 +208,7 @@ var Game = {
 			//calculate a new aiming position
 			//compPlayer->initPaddlePos();
 			
-			//collisionType = Computer;
+			this.state.attributes.collisionType = CollisionType.RightPlayer;
 			
 //			[self offsetContainmentPaddleRect: compPaddleBounds ballRect:this.ballBounds];
 
@@ -249,6 +250,7 @@ var Game = {
 		
 		var gameArea = this.gameRect();
 		var pongBallBounds = this.ball.boundingBox();
+		var collisionType = this.state.attributes.collisionType;
 		
 		//check if ball intersects top or bottom of game window and update velocity vector
 		if(!gameArea.intersects(pongBallBounds)) 
@@ -259,43 +261,47 @@ var Game = {
 			//pongBall.position = pos;
 			
 			// if ball intersects left side then computer player scored
-//			if(collisionType != Player && loc == TPLeft)
-//			{
-//				reInit = TRUE;
-//				go = FALSE;
-//				compScore ++;
-//				
-//				playerLastScored = FALSE;
-//				
-//				NSString *score = [NSString stringWithFormat:@"%d",compScore];
-//				[compScoreLabel setString:score];
-//				
-//				collisionType = Player;
-//				
-//			}
-//			// if ball intersects right side then player has scored
-//			else if(collisionType != Computer && loc == TPRight)
-//			{
-//				reInit = TRUE;
-//				go = FALSE;
-//				yourScore ++;
-//				
-//				playerLastScored = TRUE;
-//				
-//				NSString *score = [NSString stringWithFormat:@"%d",yourScore];
-//				[playerScoreLabel setString:score];
-//				
-//				collisionType = Computer;
-//				
-//			}
-//			else 
-//			{
-//				collisionType = None;
+			if(collisionType !== CollisionType.LeftPlayer && loc === PointLocation.Left)
+			{
+				//reInit = TRUE;
+				//go = FALSE;
+				this.state.rightPlayer.score ++;
+				
+				//playerLastScored = FALSE;
+				
+				//NSString *score = [NSString stringWithFormat:@"%d",compScore];
+				//[compScoreLabel setString:score];
+				
+				this.state.attributes.collisionType = CollisionType.LeftPlayer;
+				
+				this._updateScore();
+				
+			}
+			// if ball intersects right side then player has scored
+			else if(collisionType !== CollisionType.RightPlayer && loc === PointLocation.Right)
+			{
+				//reInit = TRUE;
+				//go = FALSE;
+				this.state.leftPlayer.score ++;
+				
+				//playerLastScored = TRUE;
+				
+				//NSString *score = [NSString stringWithFormat:@"%d",yourScore];
+				//[playerScoreLabel setString:score];
+				
+				this.state.attributes.collisionType = CollisionType.RightPlayer;
+				
+				this._updateScore();
+				
+			}
+			else 
+			{
+				this.state.attributes.collisionType = CollisionType.None;
 				
 				// switch direction
 				this.ball.velocity.y = -this.ball.velocity.y;
 				
-//			}
+			}
 			
 		}
 	},
