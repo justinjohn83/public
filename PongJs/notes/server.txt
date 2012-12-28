@@ -4,11 +4,17 @@ Server:
 Landing page: / - Displays players online and their status (Lobby,Waiting for match,playing)
 
 Jax RS:
-Get: /service/players : Returns list of available players (with their ids)
+Get: /service/players : Returns list of all players (with their ids)
 Post: /service/login [id=x] - login 
-Post: /service/play (id=[playerId]) -> if successful returns the id of the game
+Post: /service/game/request - request a game specifying target player or no player if server should find a player
+  - returns requestId to 
+Get: /service/game/request/status : check on status of a game request
+   -> returns game id upon successful matching
+Post : /service/game/request/status - update status of game request
 
+Get : /service/game/id -> returns current game state
+  - check every x interval
+  - server sends ball pos, opponent paddle, and scoring and state updates
 Post: /service/game/id (state={game state object}) -> notifies server of game state and changes
-
-
-
+  - sent every time an "event" happens - 
+       - paddle moves (need to throttle this one)

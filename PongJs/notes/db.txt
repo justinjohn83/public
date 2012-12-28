@@ -1,0 +1,175 @@
+xPlayer:
+userId
+firstName
+lastName
+createDt
+
+Game:
+id
+firstGamePlayerId
+secondGamePlayerId
+createDt
+lastUpdateDt
+state : ref gameStateDef
+ballPosX
+ballPosY
+ballVelocityX
+ballVelocityY
+
+GamePlayer:
+gameId
+playerId
+score
+paddlePos
+lastUpdateDt
+
+
+xGameStateDef:
+id:
+desc: start/finish
+
+
+
+xPlayerState:
+playerId
+state : ref PlayerStateDef
+lastUpdateDt
+
+xPlayerStateDef:
+id:
+desc:offline,online,waiting,requesting,playing
+
+xGameRequest:
+gameRequestId
+initiatorId
+requestorId
+requesterAccepted - 0/1
+lastUpdateDt
+createDt
+
+-------------------
+CREATE  TABLE `pong`.`Player` (
+  `userId` VARCHAR(32) NOT NULL ,
+  `firstName` VARCHAR(45) NOT NULL ,
+  `lastName` VARCHAR(45) NOT NULL ,
+  `createDt` TIMESTAMP NOT NULL ,
+  PRIMARY KEY (`userId`) );
+  
+  CREATE  TABLE `pong`.`PlayerStateDef` (
+  `playerStateDefId` INT NOT NULL AUTO_INCREMENT ,
+  `description` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`playerStateDefId`) );
+  
+  ALTER TABLE `pong`.`PlayerStateDef` 
+ADD UNIQUE INDEX `description_UNIQUE` (`description` ASC) ;
+
+insert into pong.PlayerStateDef (description) values ('offline');
+insert into pong.PlayerStateDef (description) values ('online');
+insert into pong.PlayerStateDef (description) values ('waiting');
+insert into pong.PlayerStateDef (description) values ('requesting');
+insert into pong.PlayerStateDef (description) values ('playing');
+
+CREATE  TABLE `pong`.`GameStateDef` (
+  `idGameStateDef` INT NOT NULL AUTO_INCREMENT ,
+  `description` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`idGameStateDef`) ,
+  UNIQUE INDEX `description_UNIQUE` (`description` ASC) );
+  
+insert into pong.GameStateDef (description) values ('started');
+insert into pong.GameStateDef (description) values ('finished');
+
+  
+  
+  CREATE  TABLE `pong`.`PlayerState` (
+  `lastUpdateDt` TIMESTAMP NOT NULL ,
+  `playerId` VARCHAR(32) NOT NULL ,
+  `state` INT NOT NULL ,
+  INDEX `playerId_idx` (`playerId` ASC) ,
+  INDEX `fk_playerState_playerStateDef_idx` (`state` ASC) ,
+  CONSTRAINT `fk_playerState_player`
+    FOREIGN KEY (`playerId` )
+    REFERENCES `pong`.`Player` (`userId` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_playerState_playerStateDef`
+    FOREIGN KEY (`state` )
+    REFERENCES `pong`.`PlayerStateDef` (`playerStateDefId` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+  
+  
+CREATE  TABLE `pong`.`GameRequest` (
+  `idGameRequest` INT NOT NULL AUTO_INCREMENT ,
+  `initiatorId` VARCHAR(32) NOT NULL ,
+  `requestedId` VARCHAR(32) NULL ,
+  `accepted` INT NOT NULL DEFAULT 0 ,
+  `createDt` TIMESTAMP NOT NULL ,
+  `lastUpdateDt` TIMESTAMP NOT NULL ,
+  PRIMARY KEY (`idGameRequest`) ,
+  INDEX `fk_playerStateDef_initiatorId_idx` (`initiatorId` ASC) ,
+  INDEX `fk_playerState_idx` (`requestedId` ASC) ,
+  CONSTRAINT `fk_gameRequest_initiatorId`
+    FOREIGN KEY (`initiatorId` )
+    REFERENCES `pong`.`Player` (`userId` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_gameRequest_requestedId`
+    FOREIGN KEY (`requestedId` )
+    REFERENCES `pong`.`Player` (`userId` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+CREATE  TABLE `pong`.`Game` (
+  `idGame` INT NOT NULL AUTO_INCREMENT ,
+  `firstGamePlayerId` VARCHAR(32) NOT NULL ,
+  `secondGamePlayerId` VARCHAR(32) NOT NULL ,
+  `state` INT NOT NULL ,
+  `ballPosX` FLOAT NOT NULL ,
+  `ballPosY` FLOAT NOT NULL ,
+  `ballVelocityX` FLOAT NOT NULL ,
+  `ballVelocityY` FLOAT NOT NULL ,
+  `createDt` TIMESTAMP NOT NULL ,
+  `lastUpdateDt` TIMESTAMP NOT NULL ,
+  PRIMARY KEY (`idGame`) ,
+  INDEX `fk_game_firstGamePlayerId_idx` (`firstGamePlayerId` ASC) ,
+  INDEX `fk_game_secondGamePlayerId_idx` (`secondGamePlayerId` ASC) ,
+  INDEX `fk_game_state_idx` (`state` ASC) ,
+  CONSTRAINT `fk_game_firstGamePlayerId`
+    FOREIGN KEY (`firstGamePlayerId` )
+    REFERENCES `pong`.`Player` (`userId` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_game_secondGamePlayerId`
+    FOREIGN KEY (`secondGamePlayerId` )
+    REFERENCES `pong`.`Player` (`userId` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_game_state`
+    FOREIGN KEY (`state` )
+    REFERENCES `pong`.`GameStateDef` (`idGameStateDef` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+CREATE  TABLE `pong`.`GamePlayer` (
+  `gameId` INT NOT NULL ,
+  `playerId` VARCHAR(32) NOT NULL ,
+  `score` INT NOT NULL ,
+  `paddlePos` FLOAT NOT NULL ,
+  `lastUpdateDt` TIMESTAMP NOT NULL ,
+  PRIMARY KEY (`gameId`, `playerId`) ,
+  INDEX `fk_game_gameId_idx` (`gameId` ASC) ,
+  INDEX `fk__idx` (`playerId` ASC) ,
+  CONSTRAINT `fk_gamePlayer_gameId`
+    FOREIGN KEY (`gameId` )
+    REFERENCES `pong`.`Game` (`idGame` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_gamePlayer_playerId`
+    FOREIGN KEY (`playerId` )
+    REFERENCES `pong`.`Player` (`userId` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+
+
