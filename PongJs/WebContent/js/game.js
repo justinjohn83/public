@@ -73,6 +73,14 @@ var Game = {
 		
 		this.initGame();
 
+		this._resetPositions();
+			
+	},
+	
+	_resetPositions : function() {
+		
+		var mult = -1;
+
 		
 		this.leftPaddle.position.x = 10;
 		this.leftPaddle.position.y = 250;
@@ -92,16 +100,18 @@ var Game = {
 		this.ball.position.y = 250;
 		this.ball.maxVelocity.x = this.SPEED * this.BALL_MAX_VELOCITY_X;
 		this.ball.maxVelocity.y = this.SPEED * this.BALL_MAX_VELOCITY_Y;
-		// TODO: last player who lost gets to hit the ball first
-		this.ball.velocity.x = -this.BALL_VELOCITY_X * this.SPEED;
+
+		if(this.state.attributes.gameEvent === GameEvent.LeftPlayerScored) {
+			mult = 1;
+		}
+		this.ball.velocity.x = mult * this.BALL_VELOCITY_X * this.SPEED;
 		this.ball.velocity.y = 0;
-			
 	},
 	
 	initGame: function() {
 		this.state = gameState();
-		this.state.leftPlayer.name = "Player 1";
-		this.state.rightPlayer.name = "Player 2";
+		this.state.leftPlayer.name = "Player1";
+		this.state.rightPlayer.name = "Player2";
 		
 		this._updateScore();
 		
@@ -124,6 +134,15 @@ var Game = {
 		
 		this.ball.position.x += dt * this.ball.velocity.x;
 		this.ball.position.y += dt * this.ball.velocity.y;
+		
+		// check game events
+		// TODO: paused state
+		if(this.state.attributes.gameEvent === GameEvent.LeftPlayerScored || 
+		   this.state.attributes.gameEvent === GameEvent.RightPlayerScored) {
+			// TODO: check end of game
+			this._resetPositions();
+			this.state.attributes.gameEvent = null;
+		}
 		
 		if(!keydown.up || !keydown.down) {
 			if(keydown.up) {
@@ -260,34 +279,30 @@ var Game = {
 			var loc =  gameArea.clampPoint(pos);
 			//pongBall.position = pos;
 			
-			// if ball intersects left side then computer player scored
+			// if ball intersects left side then right player scored
 			if(collisionType !== CollisionType.LeftPlayer && loc === PointLocation.Left)
 			{
 				//reInit = TRUE;
 				//go = FALSE;
 				this.state.rightPlayer.score ++;
 				
-				//playerLastScored = FALSE;
+				this.state.attributes.gameEvent = GameEvent.RightPlayerScored;
 				
-				//NSString *score = [NSString stringWithFormat:@"%d",compScore];
-				//[compScoreLabel setString:score];
 				
 				this.state.attributes.collisionType = CollisionType.LeftPlayer;
 				
 				this._updateScore();
 				
 			}
-			// if ball intersects right side then player has scored
+			// if ball intersects right side then left player has scored
 			else if(collisionType !== CollisionType.RightPlayer && loc === PointLocation.Right)
 			{
 				//reInit = TRUE;
 				//go = FALSE;
 				this.state.leftPlayer.score ++;
 				
-				//playerLastScored = TRUE;
+				this.state.attributes.gameEvent = GameEvent.LeftPlayerScored;
 				
-				//NSString *score = [NSString stringWithFormat:@"%d",yourScore];
-				//[playerScoreLabel setString:score];
 				
 				this.state.attributes.collisionType = CollisionType.RightPlayer;
 				
@@ -614,9 +629,9 @@ var gameState = function() {
 
 
 var PlayState = {
-	NewGame : 0,
-	InProgress : 1,
-	Complete : 2
+	NewGame : 1,
+	InProgress : 2,
+	Complete : 3
 };
 var CollisionType = {
 	None : 0,
@@ -626,9 +641,9 @@ var CollisionType = {
 };
 
 var GameEvent = {
-	LeftPlayerScored : 0,
-	RightPlayerScored : 1,
-	Paused : 2
+	LeftPlayerScored : 1,
+	RightPlayerScored : 2,
+	Paused : 3
 };
 
 var gameAttributes = function() {
