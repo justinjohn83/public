@@ -223,51 +223,48 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 	var predictPaddleCollision = function() {
 		// computer player is on right so calculate movement up to the collision with right of game
 		// area minus the width of the paddle
-		var finalXPos = m_gameRect.x + m_gameRect.width - m_paddle.size.x;
-		// FIXME: this is upside down in javascript! opengl origin starts from bottom left, canvas is top left
+		var ballBounds = m_ball.boundingBox();
+		var paddleBounds = m_paddle.boundingBox();
+		
+		var finalXPos = paddleBounds.x;
 		
 		var bottomY = m_gameRect.y + m_gameRect.height;
 		var topY = m_gameRect.y;
 		
-		var dx = m_ball.size.x / 2;
-		var dy = m_ball.size.y / 2;
 		
-		var xPos = m_ball.position.x; //- dx;
-		var yPos = m_ball.position.y; // - dy;
+		var xPos = ballBounds.getCenterX();
+		var yPos = ballBounds.getCenterY();
 		var xVel = m_ball.velocity.x;
 		var yVel = m_ball.velocity.y;
-		
-		if(!m_isTrackAI || xVel <= 0) {
-			return m_ball.position.y;
-		}
 		
 		// simulate
 		// xVel always > 0 because ball headed towards the right
 		
-		while(xPos < finalXPos) {
+		if((m_isTrackAI && xVel > 0) && (xPos < finalXPos && !feq(yVel,0.0))) {
 			// calculate next collision
-			if(feq(yVel,0.0)) {
-				break;
-			}
 			
 			// will we collide with top or bottom before hitting the final x pos?
 			var expY = yVel < 0 ? topY : bottomY;
 			var t = (expY - yPos) / yVel;
 			var x = xPos + t * xVel;
 			
+			// ball will collide with top or bottom of bounds first before reaching the end
 			if(x < finalXPos) {
 				xPos = x;
 				yPos = expY;
 				yVel = -yVel;
 			}
-			// we hit the end first so that's where we want to go
+			// ball will hit scoring area
 			else {
 				t = (finalXPos - xPos) / xVel;
 				yPos += yVel * t;
-				break;
 			}
 
-		} // while
+		} // if
+		
+//		if(isNaN(yPos)) {
+//			throw "NaN";
+//		}
 		
 		return yPos;
 	};
@@ -314,9 +311,8 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 	
 	that.movePaddle = function(dt) {
 		// center of paddle
-		//var initPos = vector(m_paddle.position.x + m_paddle.size.x / 2,m_paddle.position.y - m_paddle.size.y / 2);
-		//var pos = vector(initPos.x,initPos.y);
-		var pos = m_paddle.position;
+		var initPos = m_paddle.boundingBox().getCenter();
+		var pos = vector(initPos);
 		
 		//set computer player movement
 		var move_incr = Math.round(m_paddle.velocity.y * dt
@@ -347,7 +343,11 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 		var offsetY = m_paddle.clampToGameArea(m_gameRect);
 		pos.y += offsetY;
 		
-		//console.log("pos.y=" + pos.y + ";desiredYPos=" + desiredYPos + ";move_incr=" + move_incr + ";offsetY=" + offsetY);
+		// update dy
+		var dy = pos.y - initPos.y;
+		m_paddle.position.y += dy;
+		
+		console.log("dy=" + dy + ";pos.y=" + m_paddle.position.y + ";desiredYPos=" + desiredYPos + ";move_incr=" + move_incr + ";offsetY=" + offsetY);
 		
 //		var hheight = m_paddle.size.y / 2;
 		

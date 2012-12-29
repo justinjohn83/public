@@ -14,8 +14,8 @@ var Game = {
 		
 	clear : function() {
 		var c = $('#gameCanvas');
-		var w = c.attr('width');
-		var h = c.attr('height');
+		var w = parseInt(c.attr('width'),10);
+		var h = parseInt(c.attr('height'),10);
 		
 		var ctx = this.getContext();
     	ctx.strokeStyle = '#000000';
@@ -26,8 +26,8 @@ var Game = {
 	
 	gameRect : function() {
 		var c = $('#gameCanvas');
-		var w = c.attr('width');
-		var h = c.attr('height');
+		var w = parseInt(c.attr('width'),10);
+		var h = parseInt(c.attr('height'),10);
 		
 		return rect2D(0,0,w,h);
 				
@@ -379,11 +379,23 @@ var color = function() {
 
 
 
-var vector = function() {
+var vector = function(x,y) {
 	
 	var that = {};
-	that.x = 0;
-	that.y = 0;
+	if(x !== undefined && y !== undefined) {
+		that.x = x;
+		that.y = y;
+	}
+	// assuming copy constructor
+	else if(x !== undefined) {
+		that.x = x.x;
+		that.y = x.y;
+	}
+	// default constructor
+	else {
+		that.x = 0;
+		that.y = 0;
+	}
 	
 	return that;
 };
@@ -477,8 +489,8 @@ var paddle = function() {
 			var maxY = gameArea.getMaxY();
 			
 			// bottom
-			var bottomDiff = Math.abs(minY - this.position.y);
-			var topDiff = Math.abs(maxY - this.position.y);
+			var bottomDiff = Math.abs(minY - paddleBounds.getMaxY());
+			var topDiff = Math.abs(maxY - paddleBounds.getMinY());
 			
 			if(bottomDiff <= topDiff) {
 				offsetY = bottomDiff;
@@ -490,6 +502,9 @@ var paddle = function() {
 			
 		}
 		
+//		if(isNaN(offsetY)) {
+//			throw "NaN";
+//		}
 		return offsetY;
     };
     
@@ -514,6 +529,16 @@ var ball = function() {
     	this.context.fill();
     	
     	//this.context.strokeStyle = prevStroke;
+    };
+    
+    // must override bounding box: circle shape position is the center
+    // the rectangle shape position is upper left hand corner
+    that.boundingBox = function() {
+    	
+    	return rect2D(this.position.x - this.size.x / 2,
+    			      this.position.y - this.size.y / 2,
+    			      this.size.x,
+    			      this.size.y);
     };
     
     return that;
@@ -630,17 +655,24 @@ var rect2D = function(x,y,width,height) {
     	return this.y;
     };
     
-    that.getMidX = function() {
-    	return (this.x + this.width) / 2;
-    };
-    that.getMidY = function() {
-    	return (this.y + this.height) / 2;
-    };
     that.getMaxX = function() {
     	return this.x + this.width;
     };
     that.getMaxY = function() {
     	return this.y + this.height;
+    };
+    
+    that.getCenter = function() {
+    	return vector(this.x + this.width / 2,
+    				  this.y + this.height / 2);
+    };
+    
+    that.getCenterX = function() {
+    	return this.getCenter().x;
+    };
+    
+    that.getCenterY = function() {
+    	return this.getCenter().y;
     };
 	
     return that;
