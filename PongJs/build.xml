@@ -1,0 +1,49 @@
+<project name = "PongJS" basedir = "." default = "package">	
+<!-- define properties -->
+
+<property name = "build.name" value = "pongJS"/>
+<property name = "build.home" value = "build"/>
+<property name = "build.dir" value = "pongJS"/>
+<property name = "build.path" value = "${build.home}/${build.dir}"/>
+<property name = "project.path" value = "${basedir}/WebContent"/>
+	
+<target name = "clean" description = "Remove all files under build">
+		<echo message = "Removing built files and directories..."/>
+		<delete dir= "${build.home}" failonerror = "false"/>
+		<echo message = "Clean completed successfully."/>
+</target>
+
+<target name = "stage" depends = "clean" description = "Stages resources for packaging">
+	
+	<mkdir dir="${basedir}/${build.path}"/>
+	<!-- copy the files -->
+	<copy todir = "${build.path}"
+	      preservelastmodified = "true">
+		<fileset dir="${project.path}">
+			<exclude name="**/.*"/>
+			<exclude name="**/*.ini"/>
+		</fileset>
+	</copy>
+	
+</target>
+	
+<target name = "package" depends = "stage" description = "Create a distribution g-zipped file">  
+  
+  <!-- create the tarball distribution -->
+  <tar 
+  	   compression = "gzip"
+  	   destfile = "${build.home}/${build.name}.tgz"
+  	   basedir = "${build.home}"
+  	   includes = "${build.dir}/**"
+  	   excludes = "**/CVS/**,**/Root/**,**/Entries/**,**/Repository/**,**/cvs*" />
+  	   
+ <!-- also create a zip distribution -->
+ <zip
+  	   destfile = "${build.home}/${build.name}.zip"
+  	   basedir  = "${build.home}"
+  	   includes = "${build.dir}/**/*"
+  	   excludes = "**/CVS/**,**/Root/**,**/Entries/**,**/Repository/**,**/cvs*"
+  	   compress = "true"
+ 	   level    = "9" />
+</target>
+</project>
