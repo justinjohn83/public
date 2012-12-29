@@ -226,11 +226,14 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 		var finalXPos = m_gameRect.x + m_gameRect.width - m_paddle.size.x;
 		// FIXME: this is upside down in javascript! opengl origin starts from bottom left, canvas is top left
 		
-		var topY = m_gameRect.y + m_gameRect.height;
-		var bottomY = m_gameRect.y;
+		var bottomY = m_gameRect.y + m_gameRect.height;
+		var topY = m_gameRect.y;
 		
-		var xPos = m_ball.position.x;
-		var yPos = m_ball.position.y;
+		var dx = m_ball.size.x / 2;
+		var dy = m_ball.size.y / 2;
+		
+		var xPos = m_ball.position.x; //- dx;
+		var yPos = m_ball.position.y; // - dy;
 		var xVel = m_ball.velocity.x;
 		var yVel = m_ball.velocity.y;
 		
@@ -248,7 +251,7 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 			}
 			
 			// will we collide with top or bottom before hitting the final x pos?
-			var expY = yVel > 0 ? topY : bottomY;
+			var expY = yVel < 0 ? topY : bottomY;
 			var t = (expY - yPos) / yVel;
 			var x = xPos + t * xVel;
 			
@@ -311,6 +314,8 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 	
 	that.movePaddle = function(dt) {
 		// center of paddle
+		//var initPos = vector(m_paddle.position.x + m_paddle.size.x / 2,m_paddle.position.y - m_paddle.size.y / 2);
+		//var pos = vector(initPos.x,initPos.y);
 		var pos = m_paddle.position;
 		
 		//set computer player movement
@@ -355,7 +360,8 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 //			pos.y = TOP_PADDING_PIXELS + GAME_WIN_SIZE_Y - hheight;
 //		}
 		
-//		m_paddle.positionInPixels = pos;
+//		m_paddle.position.y += pos.y - initPos.y;
+		//m_paddle.position.y = pos.y + m_paddle.size.y / 2
 		
 		return direction;
 	};
