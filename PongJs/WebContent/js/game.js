@@ -44,10 +44,13 @@ var Game = {
 	leftPaddle : 0,
 	rightPaddle : 0,
 	ball : 0,
+	compPlayer : null,
+	
+	difficulty: 5,
 	
 	// constants
 	MAX_SCORE : 11,
-	SPEED : 5,
+	SPEED : 7,
 	PADDLE_VELOCITY : 40,
 	BALL_VELOCITY_Y : 25,
 	BALL_VELOCITY_X : 35,
@@ -75,6 +78,12 @@ var Game = {
 		this.initGame();
 
 		this._resetPositions();
+		
+		this.compPlayer = pongAI(
+				this.ball,
+				this.rightPaddle,
+				this.gameRect(),
+				this.difficulty);
 			
 	},
 	
@@ -94,8 +103,8 @@ var Game = {
 		this.rightPaddle.position.y = 250;
 		this.rightPaddle.maxVelocity.x = 0;
 		this.rightPaddle.maxVelocity.y = this.SPEED * this.PADDLE_VELOCITY;
-		this.leftPaddle.velocity.x = 0;
-		this.leftPaddle.velocity.y = this.rightPaddle.maxVelocity.y;
+		this.rightPaddle.velocity.x = 0;
+		this.rightPaddle.velocity.y = this.rightPaddle.maxVelocity.y;
 		
 		this.ball.position.x = 250;
 		this.ball.position.y = 250;
@@ -107,6 +116,10 @@ var Game = {
 		}
 		this.ball.velocity.x = mult * this.BALL_VELOCITY_X * this.SPEED;
 		this.ball.velocity.y = 0;
+		
+		if(this.compPlayer) {
+			this.compPlayer.initPaddlePos();
+		}
 	},
 	
 	initGame: function() {
@@ -161,6 +174,9 @@ var Game = {
 
 		this.chkBallPaddleCollsions();
 		this.chkBallWallCollisions();
+		
+		//execute AI engine
+		this.compPlayer.movePaddle(dt);
 		
 		return true;
 		
@@ -233,7 +249,7 @@ var Game = {
 			this.ball.velocity.x = -this.ball.velocity.x;
 			
 			//calculate a new aiming position
-			//compPlayer->initPaddlePos();
+			this.compPlayer.initPaddlePos();
 			
 			this.state.attributes.collisionType = CollisionType.RightPlayer;
 			
@@ -245,31 +261,13 @@ var Game = {
 	},
 	
 	chkPaddleWallCollisions: function(thePaddle) {
-		var paddleBounds = thePaddle.boundingBox();
-		var gameArea = this.gameRect();
-		// must reduce size of game area
-		gameArea.y += paddleBounds.height;
-		gameArea.height -= 2 * paddleBounds.height;
 		
-		//checking if a paddle collided with the top or bottom of the game window
-		if(!gameArea.intersects(paddleBounds))
-		{
-			// see if its closer to top or bottom
-			var minY = gameArea.getMinY();
-			var maxY = gameArea.getMaxY();
-			
-			// bottom
-			if(Math.abs(minY - thePaddle.position.y) <=
-			   Math.abs(maxY - thePaddle.position.y))
-			{
-				thePaddle.canMoveUp = false;
-			}
-			// top
-			else
-			{
-				thePaddle.canMoveDown = false;
-			}
-			
+		var canMove = thePaddle.clampToGameArea(this.gameRect());
+		if(canMove > 0) {
+			thePaddle.canMoveUp = false;
+		}
+		else if(canMove < 0) {
+			thePaddle.canMoveDown = false;
 		}
 	},
 	
@@ -458,6 +456,41 @@ var paddle = function() {
     	this.context.closePath();
 
     	
+    };
+    
+    // return > 0 if can't move up, < 0 if can't move down and 0 if can move in both directions
+    that.clampToGameArea = function(gameArea) {
+    	// make a copy
+    	gameArea = rect2D(gameArea.x,gameArea.y,gameArea.width,gameArea.height);
+    	
+		var paddleBounds = this.boundingBox();
+		
+		// must reduce size of game area
+		gameArea.y += paddleBounds.height;
+		gameArea.height -= 2 * paddleBounds.height;
+		
+		var offsetY = 0;
+		//checking if a paddle collided with the top or bottom of the game window
+		if(!gameArea.intersects(paddleBounds)) {
+			// see if its closer to top or bottom
+			var minY = gameArea.getMinY();
+			var maxY = gameArea.getMaxY();
+			
+			// bottom
+			var bottomDiff = Math.abs(minY - this.position.y);
+			var topDiff = Math.abs(maxY - this.position.y);
+			
+			if(bottomDiff <= topDiff) {
+				offsetY = bottomDiff;
+			}
+			// top
+			else {
+				offsetY = -topDiff;
+			}
+			
+		}
+		
+		return offsetY;
     };
     
     return that;
