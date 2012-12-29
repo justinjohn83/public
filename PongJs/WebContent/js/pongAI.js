@@ -347,7 +347,7 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 		var offsetY = m_paddle.clampToGameArea(m_gameRect);
 		pos.y += offsetY;
 		
-		console.log("pos.y=" + pos.y + ";desiredYPos=" + desiredYPos + ";move_incr=" + move_incr + ";offsetY=" + offsetY);
+		//console.log("pos.y=" + pos.y + ";desiredYPos=" + desiredYPos + ";move_incr=" + move_incr + ";offsetY=" + offsetY);
 		
 //		var hheight = m_paddle.size.y / 2;
 		
