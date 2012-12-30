@@ -39,14 +39,14 @@ var Game = {
 	this.rightPaddle = null;
 	this.ball = null;
 	*/
-	
+	paused : false,
 	state : 0,
 	leftPaddle : 0,
 	rightPaddle : 0,
 	ball : 0,
 	compPlayer : null,
 	
-	difficulty: 5,
+	difficulty: 7,
 	
 	// constants
 	MAX_SCORE : 11,
@@ -57,8 +57,9 @@ var Game = {
 	BALL_MAX_VELOCITY_X : 1.0 * Math.sqrt(2),
 	BALL_MAX_VELOCITY_Y : 0.75 * Math.sqrt(2),
 	
-	init : function() {
-		
+	init : function(diff) {
+			
+		this.paused = false;
 		
 		var ctx = this.getContext();
 		//var speed = 10;
@@ -78,6 +79,10 @@ var Game = {
 		this.initGame();
 
 		this._resetPositions();
+		
+		if(diff !== undefined) {
+			this.difficulty = diff;
+		}
 		
 		this.compPlayer = pongAI(
 				this.ball,
@@ -145,6 +150,10 @@ var Game = {
 	},
 	
 	update : function(dt) {
+		
+		if(this.paused) {
+			return false;
+		}
 		
 		this.ball.position.x += dt * this.ball.velocity.x;
 		this.ball.position.y += dt * this.ball.velocity.y;
@@ -454,8 +463,8 @@ var paddle = function() {
 	
 	that.canMoveUp = true;
 	that.canMoveDown = true;
-	that.size.x = 15;
-	that.size.y = 100;
+	that.size.x = 10;
+	that.size.y = 60;
     
     that.draw = function() {
     	
@@ -515,8 +524,8 @@ var paddle = function() {
 var ball = function() {
 	
 	var that = shape();
-	that.size.x = 10;
-	that.size.y = 10;
+	that.size.x = 8;
+	that.size.y = 8;
     
     that.draw = function() {
     	// draw circle
