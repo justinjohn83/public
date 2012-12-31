@@ -77,6 +77,70 @@ $(document).ready(
                                       	   Game.downPressed = false;
                                          }
                                       });
+            
+            var lastTouchPos = null;
+            
+            var processTouch = function(event) {
+            	// get viewport coords of touch
+            	var touch =  event.touches[0];
+            	
+            	var pos = vector(touch.pageX,touch.pageY);
+            	// position is relative to listener element: the canvas
+            	
+            	// get viewport coords of paddle
+            	var paddlePos = Game.leftPaddle.position; //Game.toScreenCoordinates(Game.leftPaddle.position);
+            	
+            	console.log("pos=" + pos.y + ";paddlePos=" + paddlePos.y);
+            	
+            	// compare y coords
+            	var currentY = pos.y;
+            	var paddleY = paddlePos.y;
+            	
+            	if(Math.abs(currentY - paddleY) < 2) {
+            		Game.upPressed = Game.downPressed = false;
+            	}
+            	else {
+            		if(currentY < paddleY) {
+            			Game.upPressed = true;
+            		}
+            		else {
+            			Game.downPressed = true;
+            		}
+            	}
+            	
+            	// compare to last position for "off" detection
+            	if(lastTouchPos) {
+            		if(currentY < lastTouchPos.y) {
+            			Game.downPressed = false;
+            		}
+            		else if(currentY > lastTouchPos.y) {
+            			Game.upPressed = false;
+            		}
+            	}
+            	
+            	lastTouchPos = pos;
+            	
+            };
+            
+//            $(document).bind("touchmove",function(event) {
+//            	processTouch(event);
+//            });
+//			$(document).bind("touchstart",function(event) {
+//            	processTouch(event);
+//			});
+            var canvas = document.getElementById('gameCanvas');
+            
+            canvas.addEventListener('touchmove', function(event) {
+            	processTouch(event);
+            });
+            
+            canvas.addEventListener('touchstart', function(event) {
+            	processTouch(event);
+            });
+            
+            canvas.addEventListener('touchend',function(event) {
+            	Game.upPressed = Game.downPressed = false;
+            });
             // end key up, key down
             
             // initial game drawing

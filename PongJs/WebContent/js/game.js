@@ -66,6 +66,9 @@ var Game = {
 	// constants
 	MAX_SCORE : 11,
 	SPEED : 7,
+	BALL_SIZE: 8,
+	PADDLE_LENGTH: 55,
+	PADDLE_WIDTH: 10,
 	PADDLE_VELOCITY : 40,
 	BALL_VELOCITY_Y : 25,
 	BALL_VELOCITY_X : 35,
@@ -119,14 +122,14 @@ var Game = {
 
 		
 		this.leftPaddle.position.x = 10;
-		this.leftPaddle.position.y = 250;
+		this.leftPaddle.position.y = 250 - this.PADDLE_LENGTH / 2;
 		this.leftPaddle.maxVelocity.x = 0;
 		this.leftPaddle.maxVelocity.y = this.SPEED * this.PADDLE_VELOCITY;
 		this.leftPaddle.velocity.x = 0;
 		this.leftPaddle.velocity.y = this.leftPaddle.maxVelocity.y;
 		
 		this.rightPaddle.position.x = 475;
-		this.rightPaddle.position.y = 250;
+		this.rightPaddle.position.y = 250 - this.PADDLE_LENGTH / 2;
 		this.rightPaddle.maxVelocity.x = 0;
 		this.rightPaddle.maxVelocity.y = this.SPEED * this.PADDLE_VELOCITY;
 		this.rightPaddle.velocity.x = 0;
@@ -484,8 +487,8 @@ var paddle = function() {
 	
 	that.canMoveUp = true;
 	that.canMoveDown = true;
-	that.size.x = 10;
-	that.size.y = 60;
+	that.size.x = Game.PADDLE_WIDTH;
+	that.size.y = Game.PADDLE_LENGTH;
     
     that.draw = function() {
     	
@@ -545,8 +548,8 @@ var paddle = function() {
 var ball = function() {
 	
 	var that = shape();
-	that.size.x = 8;
-	that.size.y = 8;
+	that.size.x = Game.BALL_SIZE;
+	that.size.y = Game.BALL_SIZE;
     
     that.draw = function() {
     	// draw circle
