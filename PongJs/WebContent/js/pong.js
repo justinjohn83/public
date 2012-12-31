@@ -60,10 +60,22 @@ $(document).ready(
             $(document).bind("keydown", function(event) 
                                         {
                                            keydown[keyName(event)] = true;
+                                           if(keydown.up) {
+                                        	   Game.upPressed = true;
+                                           }
+                                           if(keydown.down) {
+                                        	   Game.downPressed = true;
+                                           }
                                         });
             $(document).bind("keyup", function(event) 
                                       {
                                          keydown[keyName(event)] = false;
+                                         if(!keydown.up) {
+                                      	   Game.upPressed = false;
+                                         }
+                                         if(!keydown.down) {
+                                      	   Game.downPressed = false;
+                                         }
                                       });
             // end key up, key down
             

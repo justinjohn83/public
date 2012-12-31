@@ -24,6 +24,18 @@ var Game = {
     	ctx.clearRect(0,0,w,h);
 	},
 	
+	toScreenCoordinates:function(pos) {
+		var c = $('#gameCanvas');
+		var offset = c.offset();
+		
+		// make a copy
+		var rPos = vector(pos);
+		rPos.x += offset.left;
+		rPos.y += offset.top;
+		
+		return rPos;
+	},
+	
 	gameRect : function() {
 		var c = $('#gameCanvas');
 		var w = parseInt(c.attr('width'),10);
@@ -48,6 +60,9 @@ var Game = {
 	
 	difficulty: 7,
 	
+	upPressed: false,
+	downPressed : false,
+	
 	// constants
 	MAX_SCORE : 11,
 	SPEED : 7,
@@ -57,9 +72,15 @@ var Game = {
 	BALL_MAX_VELOCITY_X : 1.0 * Math.sqrt(2),
 	BALL_MAX_VELOCITY_Y : 0.75 * Math.sqrt(2),
 	
+//	getPlayerPaddlePositionWorld: function() {
+//		// returns a "vector" containing the screen position of the player's paddle center
+//		// TODO: use this with a touch event listener in "pong.js" to convert to "up" and "down" key events
+//	},
+	
 	init : function(diff) {
 			
 		this.paused = false;
+		this.upPressed = this.downPressed = false;
 		
 		var ctx = this.getContext();
 		//var speed = 10;
@@ -172,11 +193,11 @@ var Game = {
 			}
 		}
 		
-		if(!keydown.up || !keydown.down) {
-			if(keydown.up) {
+		if(!this.upPressed || !this.downPressed) {
+			if(this.upPressed) {
 				this.movePaddleUp(dt);
 			}
-			else if(keydown.down) {
+			else if(this.downPressed) {
 				this.movePaddleDown(dt);
 			}
 		}
