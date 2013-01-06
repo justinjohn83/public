@@ -315,28 +315,32 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 		var pos = vector(initPos);
 		
 		//set computer player movement
-		var move_incr = Math.round(m_paddle.velocity.y * dt
-									 * m_moveProb / 100); // * 0.75f);
+		var move_incr = Math.round(m_paddle.velocity.y * dt * m_moveProb / 100); // * 0.75f);
 		
 		var direction = 0;
 		
 		var desiredYPos = calcDesiredYPos();
 		
 		//we want to move paddle down to match ball position
-		if (desiredYPos > pos.y)
+		if (desiredYPos > pos.y) {
 			direction = 1;
+		}
 		//we want to move paddle up to match ball position
-		else if(desiredYPos < pos.y)
+		else if(desiredYPos < pos.y) {
 			direction = -1;
+		}
 		//we don't need to move the paddle
-		else
+		else {
 			direction = 0;
+		}
 		
 		
-		if(Math.abs(desiredYPos - pos.y) > move_incr)
+		if(Math.abs(desiredYPos - pos.y) > move_incr) {
 			pos.y += direction * move_incr;
-		else
+		}
+		else {
 			pos.y = desiredYPos;
+		}
 		
 		//make sure that m_paddle stays within the game screen boundaries
 		
@@ -376,4 +380,4 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 	
 	return that;
 	
-} // pongAI
+}; // pongAI
