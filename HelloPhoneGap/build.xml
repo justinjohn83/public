@@ -1,0 +1,27 @@
+<project name = "PongJS" basedir = "." default = "stage">	
+<!-- define properties -->
+
+<property name = "build.path" value = "/Users/jmontgomery/http/helloPhoneGap"/>
+<property name = "project.path" value = "${basedir}/assets/www"/>
+	
+<target name = "clean" description = "Remove all files under build">
+		<echo message = "Removing built files and directories..."/>
+		<delete dir= "${build.path}" failonerror = "false"/>
+		<echo message = "Clean completed successfully."/>
+</target>
+
+<target name = "stage" depends = "clean" description = "Stages resources for packaging">
+	
+	<mkdir dir="${build.path}"/>
+	<!-- copy the files -->
+	<copy todir = "${build.path}"
+	      preservelastmodified = "true">
+		<fileset dir="${project.path}">
+			<exclude name="**/.*"/>
+			<exclude name="**/*.ini"/>
+		</fileset>
+	</copy>
+	
+</target>
+
+</project>
