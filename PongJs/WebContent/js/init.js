@@ -1,10 +1,10 @@
 $(document).ready(function() {
 	// new game click handler
 	$('#playGame').click(function() {
-		newPongGame();
+		Pong.newPongGame();
 	});
 	
 	$('#pauseGame').click(function() {
-		pausePongGame();
+		Pong.pausePongGame();
 	});
 });
