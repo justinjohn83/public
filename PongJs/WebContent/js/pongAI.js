@@ -312,7 +312,7 @@ var pongAI = function(ball,paddle,gameRect,difficulty) {
 	that.movePaddle = function(dt) {
 		// center of paddle
 		var initPos = m_paddle.boundingBox().getCenter();
-		var pos = vector(initPos);
+		var pos = new Vector(initPos);
 		
 		//set computer player movement
 		var move_incr = Math.round(m_paddle.velocity.y * dt * m_moveProb / 100); // * 0.75f);

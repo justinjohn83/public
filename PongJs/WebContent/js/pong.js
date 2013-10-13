@@ -41,7 +41,7 @@ function doGameLoop() {
 	  {
 		 var currentTimeLoop = new Date().getTime();
 		 // ms to s
-		 var dt = (currentTimeLoop - lastTimeLoop) / 1000;
+		 dt = (currentTimeLoop - lastTimeLoop) / 1000;
 		 
 		 //console.log("dt=" + dt);
 		 
@@ -63,7 +63,7 @@ function doGameLoop() {
 			     myAnimationFrameId = requestAnimationFrame(gameloop);
 		     }
 		 }
-	  })();
+	  }());
 }
 
 function initAnimationLoop() {
@@ -190,7 +190,7 @@ function bindEventHandlers() {
     	// get viewport coords of touch
     	var touch =  event.touches[0];
     	
-    	var pos = vector(touch.pageX,touch.pageY);
+    	var pos = new Vector(touch.pageX,touch.pageY);
     	
     	processMove(pos);
     };
@@ -227,7 +227,7 @@ function bindEventHandlers() {
 	});
 	canvas.addEventListener('mousemove',function(event) {
 		if(mouseDown) {
-        	var pos = vector(event.pageX,event.pageY);
+        	var pos = new Vector(event.pageX,event.pageY);
         	
         	processMove(pos);
 		}
