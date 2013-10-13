@@ -227,31 +227,31 @@ function bindEventHandlers() {
 //	$(document).bind("touchstart",function(event) {
 //    	processTouch(event);
 //	});
-    var canvas = document.getElementById('gameCanvas');
+    var canvas = $('#gameCanvas');
     
     // touch events
-    canvas.addEventListener('touchmove', function(event) {
+    canvas.on('touchmove', function(event) {
     	processTouch(event);
     });
     
-    canvas.addEventListener('touchstart', function(event) {
+    canvas.on('touchstart', function(event) {
     	processTouch(event);
     });
     
-    canvas.addEventListener('touchend',function(event) {
+    canvas.on('touchend',function(event) {
     	Game.upPressed = Game.downPressed = false;
     });
     
     // mouse events
     var mouseDown = false;
     
-    canvas.addEventListener('mousedown',function(event) {
+    canvas.on('mousedown',function(event) {
     	mouseDown = true;
     });
-	canvas.addEventListener('mouseup',function(event) {
+	canvas.on('mouseup',function(event) {
 		mouseDown = false;
 	});
-	canvas.addEventListener('mousemove',function(event) {
+	canvas.on('mousemove',function(event) {
 		if(mouseDown) {
         	var pos = new Vector(event.pageX,event.pageY);
         	
