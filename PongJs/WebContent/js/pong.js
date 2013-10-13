@@ -66,23 +66,43 @@ function doGameLoop() {
 	  }());
 }
 
-function initAnimationLoop() {
-	//var game = new Game();
-
-	var lastTime = 0;
-	var vendors = ['ms', 'moz', 'webkit', 'o'];
-	for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) 
-	{
-	   window.requestAnimationFrame = window[vendors[x]+
-	                                  'RequestAnimationFrame'];
-	   window.cancelRequestAnimationFrame = window[vendors[x]+
-	                                        'CancelRequestAnimationFrame'];
+function checkForNativeAnimationLoop() {	
+	// check for standard implementation property name
+	if(!window.requestAnimationFrame || !window.cancelAnimationFrame) {
+		// check for vendor implementation of native animation loop
+		var vendors = ['ms', 'moz', 'webkit', 'o'];
+		for (var x = 0; x < vendors.length; ++x) {
+			
+			var vendorName = vendors[x];
+			var requestName = vendorName + 'RequestAnimationFrame';
+			var cancelName = vendorName + 'CancelAnimationFrame';
+			
+			var windowRequestFunction = window[requestName];
+			var windowCancelFunction = window[cancelName];
+			
+			if(typeof(windowRequestFunction) === 'function' && typeof(windowCancelFunction) === 'function') {
+				// found a vendor match
+				window.requestAnimationFrame = windowRequestFunction;
+				window.cancelAnimationFrame = windowCancelFunction;
+				
+				return true;
+			}
+		}
 	}
+	else {
+		// found along standard path
+		return true;
+	}
+	
+	// not found
+	return false;
+}
 
-	if (!window.requestAnimationFrame)
-	{
-	   var f = function(callback, element) 
-	           {
+function setupSoftwareAnimationLoop() {
+	var lastTime = 0;
+
+	if (!window.requestAnimationFrame) {
+	   var f = function(callback, element) {
 	              var currTime = new Date().getTime();
 	              var timeToCall = Math.max(0, 16-(currTime-lastTime));
 	              // timeToCall is in ms -> convert to s to pass to callback for a "dt"
@@ -104,6 +124,13 @@ function initAnimationLoop() {
 	                                    clearTimeout(id);
 	                                 };
 	}
+}
+
+function initAnimationLoop() {
+	
+	if(!checkForNativeAnimationLoop()) {
+		setupSoftwareAnimationLoop();
+	}
 	
 	
 	bindEventHandlers();
@@ -116,8 +143,7 @@ function initAnimationLoop() {
 function bindEventHandlers() {
 	// set up key up/key down
     window.keydown = {};
-    function keyName(event) 
-    {
+    function keyName(event)  {
     	// FIXME: jQuery.hotkeys not defined even though script plugin is included!
        return hotkeys.specialKeys[event.which] ||
               String.fromCharCode(event.which).toLowerCase();
