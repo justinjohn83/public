@@ -231,11 +231,11 @@ function bindEventHandlers() {
     
     // touch events
     canvas.on('touchmove', function(event) {
-    	processTouch(event);
+    	processTouch(event.originalEvent);
     });
     
     canvas.on('touchstart', function(event) {
-    	processTouch(event);
+    	processTouch(event.originalEvent);
     });
     
     canvas.on('touchend',function(event) {
@@ -252,6 +252,7 @@ function bindEventHandlers() {
 		mouseDown = false;
 	});
 	canvas.on('mousemove',function(event) {
+		event = event.originalEvent;
 		if(mouseDown) {
         	var pos = new Vector(event.pageX,event.pageY);
         	
